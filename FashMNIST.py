@@ -1,8 +1,16 @@
+# Here's a code which creates a Neural Network to indicate what an object is in the Fashion MNIST dataset.
+# It selects the image randomly by picking the index randomly, then predicts what the object is.
+# Also plots the images with the help of matplotlib
+
+import matplotlib.pyplot as plt
+import random
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
 from torchvision import datasets
 from torchvision.transforms import ToTensor
+
+
 
 # Download training data from open datasets.
 training_data = datasets.FashionMNIST(
@@ -118,106 +126,21 @@ classes = [
 ]
 
 model.eval()
-x, y = test_data[0][0], test_data[0][1]
-with torch.no_grad():
-    x = x.to(device)
-    pred = model(x)
-    predicted, actual = classes[pred[0].argmax(0)], classes[y]
-    print(f'Predicted: "{predicted}", Actual: "{actual}"')
 
-## OUTPUT OF THE CODE
-#100.0%
-#100.0%
-#100.0%
-#100.0%
-#Shape of X [N, C, H, W]: torch.Size([64, 1, 28, 28])
-#Shape of y: torch.Size([64]) torch.int64
-#Using mps device
-#NeuralNetwork(
-#  (flatten): Flatten(start_dim=1, end_dim=-1)
-#  (linear_relu_stack): Sequential(
-#    (0): Linear(in_features=784, out_features=512, bias=True)
-#    (1): ReLU()
-#    (2): Linear(in_features=512, out_features=512, bias=True)
-#    (3): ReLU()
-#    (4): Linear(in_features=512, out_features=10, bias=True)
-#  )
-#)
-#Epoch 1
-#-------------------------------
-#loss: 2.304876  [   64/60000]
-#loss: 2.289908  [ 6464/60000]
-#loss: 2.267773  [12864/60000]
-#loss: 2.265378  [19264/60000]
-#loss: 2.255449  [25664/60000]
-#loss: 2.214181  [32064/60000]
-#loss: 2.238430  [38464/60000]
-#loss: 2.193313  [44864/60000]
-#loss: 2.188861  [51264/60000]
-#loss: 2.161681  [57664/60000]
-#Test Error: 
-# Accuracy: 40.0%, Avg loss: 2.150826 
-#
-#Epoch 2
-#-------------------------------
-#loss: 2.162581  [   64/60000]
-#loss: 2.150074  [ 6464/60000]
-#loss: 2.087574  [12864/60000]
-#loss: 2.106519  [19264/60000]
-#loss: 2.061974  [25664/60000]
-#loss: 1.990094  [32064/60000]
-#loss: 2.041882  [38464/60000]
-#loss: 1.946764  [44864/60000]
-#loss: 1.951442  [51264/60000]
-#loss: 1.888977  [57664/60000]
-#Test Error: 
-# Accuracy: 55.8%, Avg loss: 1.876820 
-#
-#Epoch 3
-#-------------------------------
-#loss: 1.914055  [   64/60000]
-#loss: 1.873274  [ 6464/60000]
-#loss: 1.756315  [12864/60000]
-#loss: 1.802029  [19264/60000]
-#loss: 1.690105  [25664/60000]
-#loss: 1.639900  [32064/60000]
-#loss: 1.685736  [38464/60000]
-#loss: 1.570634  [44864/60000]
-#loss: 1.595990  [51264/60000]
-#loss: 1.505016  [57664/60000]
-#Test Error: 
-# Accuracy: 62.5%, Avg loss: 1.509818 
-#
-#Epoch 4
-#-------------------------------
-#loss: 1.579704  [   64/60000]
-#loss: 1.532332  [ 6464/60000]
-#loss: 1.388443  [12864/60000]
-#loss: 1.461877  [19264/60000]
-#loss: 1.345012  [25664/60000]
-#loss: 1.337852  [32064/60000]
-#loss: 1.366747  [38464/60000]
-#loss: 1.280840  [44864/60000]
-#loss: 1.312036  [51264/60000]
-#loss: 1.226945  [57664/60000]
-#Test Error: 
-# Accuracy: 64.0%, Avg loss: 1.243428 
-#
-#Epoch 5
-#-------------------------------
-#loss: 1.321945  [   64/60000]
-#loss: 1.292726  [ 6464/60000]
-#loss: 1.134766  [12864/60000]
-#loss: 1.236985  [19264/60000]
-#loss: 1.121283  [25664/60000]
-#loss: 1.138755  [32064/60000]
-#loss: 1.170110  [38464/60000]
-#loss: 1.099546  [44864/60000]
-#loss: 1.133386  [51264/60000]
-#loss: 1.065712  [57664/60000]
-#Test Error: 
-# Accuracy: 64.9%, Avg loss: 1.077634 
-#
-#Done!
-#Saved PyTorch Model State to model.pth
-#Predicted: "Ankle boot", Actual: "Ankle boot"
+# Pick a random image from the test dataset
+idx = random.randint(0, len(test_data)-1)
+x, y = test_data[idx]
+
+# Show the image
+plt.imshow(x.squeeze(), cmap="gray")
+plt.title(f"Actual Label: {classes[y]}")
+plt.show()
+
+# Add batch dimension before passing into the model
+x = x.unsqueeze(0).to(device)
+
+with torch.no_grad():
+    pred = model(x)
+    predicted = classes[pred[0].argmax(0)]
+    print(f"Index: {idx}")
+    print(f"Predicted: {predicted}, Actual: {classes[y]}")
